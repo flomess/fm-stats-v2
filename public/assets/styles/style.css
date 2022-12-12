@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Akshar&family=Chakra+Petch&display=swap');
+@import url('/node_modules/flag-icons/css/flag-icons.min.css');
+
+@tailwind utilities;
+@tailwind base;
+@tailwind components;
+
+
+@layer utilities {
+  button {
+    background-color: #c5048a;
+  }
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  top: 0;
+}
+
+body .main {
+  font-family: 'Chakra Petch', sans-serif;
+  background-image: url('../img/bg.svg');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  background-position-x: left;
+}
+
+.pagination li {
+  display: inline-block;
+  margin: 3px;
+  width: 35px;
+  height: 35px;
+  background-color: #2f1e4f;
+  border-radius: 20%;
+  padding: 3px;
+  transition: 0.5s ease;
+  cursor: pointer;
+}
+
+.pagination li:hover {
+  background-color: #3c2f6f;
+}
+
+[type=submit],
+button.bg-pink-fm {
+  background-color: #c5048a !important;
+}
+
+[type=submit]:hover,
+button.bg-pink-fm:hover {
+  background-color: #f135d2 !important;
+}

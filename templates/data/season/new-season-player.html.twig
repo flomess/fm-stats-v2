@@ -1,0 +1,102 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle entrée - Saison {{ season.getName() }} de {{ team.getName() }}{% endblock %}
+{% block h1 %}Nouvelle entrée - Saison {{ season.getName() }} de {{ team.getName() }}{%endblock%}
+
+{% block body %}
+    <div class="m-auto w-5/12">
+        {{ form_start(form) }}
+            <div class="grid grid-cols-3 gap-1 mt-12 m-auto text-center">
+                <div class="col-span-3">
+                    {{ form_label(form.player) }}
+                </div>
+                <div class="col-span-3">
+                    {{ form_widget(form.player, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                </div>
+            </div>
+            <div class="grid grid-cols-13 gap-1 mt-12 m-auto text-center">
+                <div class="col-span-1">
+                    {{ form_widget(form.is_loaned, {'attr':{'class':'isLoaned p-1 text-purple-fm rounded-sm'}}) }}
+                    {{ form_label(form.is_loaned) }}
+                </div>
+            </div>
+            <div class="grid grid-cols-13 gap-1 mt-12 m-auto text-center hidden half-season">
+                <div class="col-span-1">
+                    {{ form_widget(form.half_season, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                    {{ form_label(form.half_season) }}
+                </div>
+            </div>
+            <div class="grid grid-cols-9 gap-1 mt-12 text-center hidden loan-inputs">
+                <div class="col-span-3">
+                    {{ form_label(form.loan_team) }}
+                </div>
+                <div class="col-span-1">
+                    {{ form_label(form.loan_team_division) }}
+                </div>
+                <div class="col-span-5 text-left ml-24">
+                    {{ form_label(form.loan_team_country) }}
+                </div>
+                <div class="col-span-3">
+                    {{ form_widget(form.loan_team, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                </div>
+                <div class="col-span-1">
+                    {{ form_widget(form.loan_team_division, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                </div>
+                <div class="col-span-5 text-left">
+                    {{ form_widget(form.loan_team_country, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                </div>
+            </div>          
+            <div class="grid grid-cols-7 gap-1 mt-12 m-auto text-center stats-fields">
+                <div class="col-span-1">
+                    {{ form_label(form.matches) }}
+                </div>
+                <div class="col-span-1">
+                    {{ form_label(form.first_team) }}
+                </div>
+                <div class="col-span-1">
+                    {{ form_label(form.goals) }}
+                </div>
+                <div class="col-span-1">
+                    {{ form_label(form.assists) }}
+                </div>
+                <div class="col-span-1">
+                    {{ form_label(form.yellow_cards) }}
+                </div>
+                <div class="col-span-1">
+                    {{ form_label(form.red_cards) }}
+                </div>
+                <div class="col-span-1">
+                    {{ form_label(form.rate) }}
+                </div>
+                <div class="col-span-1">
+                    {{ form_widget(form.matches, {'attr':{'class':'p-1 text-purple-fm rounded-sm w-16'}}) }}
+                </div>
+                <div class="col-span-1">
+                    {{ form_widget(form.first_team, {'attr':{'class':'p-1 text-purple-fm rounded-sm w-16'}}) }}
+                </div>
+                <div class="col-span-1">
+                    {{ form_widget(form.goals, {'attr':{'class':'p-1 text-purple-fm rounded-sm w-16'}}) }}
+                </div>
+                <div class="col-span-1">
+                    {{ form_widget(form.assists, {'attr':{'class':'p-1 text-purple-fm rounded-sm w-16'}}) }}
+                </div>
+                <div class="col-span-1">
+                    {{ form_widget(form.yellow_cards, {'attr':{'class':'p-1 text-purple-fm rounded-sm w-16'}}) }}
+                </div>
+                <div class="col-span-1">
+                    {{ form_widget(form.red_cards, {'attr':{'class':'p-1 text-purple-fm rounded-sm w-16'}}) }}
+                </div>
+                <div class="col-span-1">
+                    {{ form_widget(form.rate, {'attr':{'class':'p-1 text-purple-fm rounded-sm w-16'}}) }}
+                </div>
+            </div>
+            <div class="mt-12 m-auto">
+                {{ form_row(form.save, {'attr':{'class':'btn btn-primary bg-pink-fm p-2 rounded-md shadow-md font-bold transition-all transition-duration-150 hover:bg-pink-fm-light'}}) }}
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ encore_entry_script_tags('playerSeasonLoan') }}
+{% endblock %}

@@ -1,0 +1,328 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ season.getTeam().getName() }} - Saison {{ season.getName() }}{% endblock %}
+{% block h1 %}Saison {{ season.getName() }} de {{ season.getTeam().getName() }}{%endblock%}
+
+{% block body %}
+    <div class="mt-12 mb-6">
+        {% if previousSeason %}
+            <a href="{{ path('team_season_home', {'teamId': season.getTeam().getId(), 'seasonId': previousSeason.getId()}) }}">
+                <i class="fa-solid fa-caret-left fa-xl"></i>
+            </a>
+            {% else %}
+                <i class="fa-solid fa-caret-left fa-xl text-gray-500"></i>
+        {% endif %}
+        <select id="season-selector" onchange="goToSeason()" class="text-black">
+            <option class="py-1" value="">-- Saisons --</option>
+            {% for season in teamSeasons %}
+                <option class="py-1" value="{{ season.getId() }}">{{ season.getName() }}</option>
+            {% endfor %}
+        </select>
+        {% if nextSeason %}
+            <a href="{{ path('team_season_home', {'teamId': season.getTeam().getId(), 'seasonId': nextSeason.getId()}) }}">
+                <i class="fa-solid fa-caret-right fa-xl"></i>
+            </a>
+            {% else %}
+                <i class="fa-solid fa-caret-right fa-xl text-gray-500"></i>
+        {% endif %}
+    </div>
+    {% if season.getCompetitions() is not null %}
+        <div class="flex justify-center my-2">
+        {% for competition in season.getCompetitions() %}
+            <div class="w-54 mx-2 inline-block border-2 border-solid border-purple-fm shadow-xl grid grid-cols-6 text-center bg-purple-fm">
+                <div class="px-2 py-1 font-bold col-span-6">
+                    {{ competition.name }}
+                </div>
+                <div class="px-2 py-1 col-span-6 bg-purple-fm-light">
+                    {{ competition.ranking }}
+                </div>
+                <div class="p-1 font-bold col-span-1">
+                    M
+                </div>
+                <div class="p-1 font-bold col-span-1">
+                    V
+                </div>
+                <div class="p-1 font-bold col-span-1">
+                    N
+                </div>
+                <div class="p-1 font-bold col-span-1">
+                    D
+                </div>
+                <div class="p-1 font-bold col-span-1">
+                    BP
+                </div>
+                <div class="p-1 font-bold col-span-1">
+                    BC
+                </div>
+                <div class="p-1 col-span-1 bg-purple-fm-light">
+                    {{ competition.matches }}
+                </div>
+                <div class="p-1 col-span-1 bg-purple-fm-light">
+                    {{ competition.victories }}
+                </div>
+                <div class="p-1 col-span-1 bg-purple-fm-light">
+                    {{ competition.draws }}
+                </div>
+                <div class="p-1 col-span-1 bg-purple-fm-light">
+                    {{ competition.defeats }}
+                </div>
+                <div class="p-1 col-span-1 bg-purple-fm-light">
+                    {{ competition.g }}
+                </div>
+                <div class="p-1 col-span-1 bg-purple-fm-light">
+                    {{ competition.ga }}
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    {% endif %}
+    {% if players is not null %}
+        <div id="players-list" class="border-2 border-solid border-purple-fm shadow-xl w-fit m-auto mb-8">
+            <div class="flex w-fit m-auto justify-center bg-purple-fm">
+                <div class="p-2 w-44 font-bold col-span-3">
+                    Joueur<button class="sort pl-2" data-sort="list-name"><i class="fa-solid fa-sort fa-sm"></i></button>
+                </div>
+                <div class="p-2 w-24 font-bold col-span-2">
+                    Poste<button class="sort pl-2" data-sort="list-poste"><i class="fa-solid fa-sort fa-sm"></i></button>
+                </div>
+                <div class="p-2 w-44 font-bold col-span-3">
+                    Pays<button class="sort pl-2" data-sort="list-country"><i class="fa-solid fa-sort fa-sm"></i></button>
+                </div>
+                <div class="p-2 w-12 font-bold col-span-1">
+                    M<button class="sort pl-2" data-sort="list-matchs" data-order="desc"><i class="fa-solid fa-sort fa-sm"></i></button>
+                </div>
+                <div class="p-2 w-12 font-bold col-span-1">
+                    T<button class="sort pl-2" data-sort="list-titu" data-order="desc"><i class="fa-solid fa-sort fa-sm"></i></button>
+                </div>
+                <div class="p-2 w-12 font-bold col-span-1">
+                    B<button class="sort pl-2" data-sort="list-buts" data-order="desc"><i class="fa-solid fa-sort fa-sm"></i></button>
+                </div>
+                <div class="p-2 w-12 font-bold col-span-1">
+                    P<button class="sort pl-2" data-sort="list-passes" data-order="desc"><i class="fa-solid fa-sort fa-sm"></i></button>
+                </div>
+                <div class="p-2 w-14 font-bold col-span-1">
+                    CJ<button class="sort pl-2" data-sort="list-cj" data-order="desc"><i class="fa-solid fa-sort fa-sm"></i></button>
+                </div>
+                <div class="p-2 w-14 font-bold col-span-1">
+                    CR<button class="sort pl-2" data-sort="list-cr" data-order="desc"><i class="fa-solid fa-sort fa-sm"></i></button>
+                </div>
+                <div class="p-2 w-20 font-bold col-span-1">
+                    Note<button class="sort pl-2" data-sort="list-note" data-order="desc"><i class="fa-solid fa-sort fa-sm"></i></button>
+                </div>
+            </div>
+            <div class="list">
+                {% for player in players %}
+                    {% if player.isLoaned() == false %}
+                        <div onclick="window.location = `{{ path('player_home', {'teamId':season.getTeam().getId(), 'playerId':player.getPlayer().getId()}) }}`" class="loop-index flex w-fit m-auto justify-center cursor-pointer hover:bg-purple-fm-light-hover">
+                            <div class="p-2 w-44 flex justify-center items-center">
+                                <div class="text-center">
+                                    {{ player.getPlayer().getFirstname() }}&nbsp;<span class="list-name">{{ player.getPlayer().getLastname() }}</span>
+                                    {% if player.getPlayer().arrival.winter == true and (season.getName()|slice(0,4) + 1) == player.getPlayer().arrival.date %}
+                                        <br><div class="text-xs">(arrivé en jan.)</div>
+                                    {% elseif player.getPlayer().departure and player.getPlayer().departure.winter == true and (season.getName()|slice(0,4) + 1) == player.getPlayer().departure.date %}
+                                        <br><div class="text-xs">(parti en jan.)</div>
+                                    {% elseif player.isLoaned and player.loanInfos.half_season %}
+                                        <br><div class="text-xs">(prêté à partir de jan.)</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="p-2 w-24 flex justify-center items-center list-poste">
+                                {{ player.getPlayer().position }}
+                            </div>
+                            <div class="p-2 w-44 flex justify-center items-center">
+                                <div class="p-2"><span class="fi fi-{{player.getPlayer().countryFlag}}"></span>&nbsp;<span class="list-country">{{ player.getPlayer().getCountry() }}</span></div>
+                            </div>
+                            <div class="p-2 w-12 flex justify-center items-center">
+                                <span class="list-matchs">{{ player.stats.matches }}</span>
+                            </div>
+                            <div class="p-2 w-12 flex justify-center items-center">
+                                <span class="list-titu">{{ player.stats.first_team }}</span>
+                            </div>
+                            <div class="p-2 w-12 flex justify-center items-center">
+                                <span class="list-buts">{{ player.stats.goals }}</span>
+                            </div>
+                            <div class="p-2 w-12 flex justify-center items-center">
+                                <span class="list-passes">{{ player.stats.assists }}</span>
+                            </div>
+                            <div class="p-2 w-14 flex justify-center items-center">
+                                <span class="list-cj">{{ player.stats.yellow_cards }}</span>
+                            </div>
+                            <div class="p-2 w-14 flex justify-center items-center">
+                                <span class="list-cr">{{ player.stats.red_cards }}</span>
+                            </div>
+                            <div class="p-2 w-20 flex justify-center items-center">
+                                <span class="list-note">{{ player.stats.rate|number_format(2, '.', ' ') }}</span>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% if loaned|length > 0 %}
+        <h1 class="text-center text-2xl font-bold mb-6">Joueurs prêtés</h1>
+        <div class="border-2 border-solid border-purple-fm shadow-xl mx-72 mb-12 grid grid-cols-11 text-center bg-purple-fm">
+            <div class="p-2 font-bold col-span-3">
+                Joueur
+            </div>
+            <div class="p-2 font-bold col-span-2">
+                Poste
+            </div>
+            <div class="p-2 font-bold col-span-3">
+                Pays
+            </div>
+            <div class="p-2 font-bold col-span-3">
+                Prêté à
+            </div>
+            {% set rank = 0 %}
+            {% for player in players | sort((a, b) => a.stats.matches <=> b.stats.matches) | reverse %}
+                {% if player.isLoaned() == true %}
+                    {% set rank = rank + 1 %}
+                    <div onclick="window.location = `{{ path('player_home', {'teamId':season.getTeam().getId(), 'playerId':player.getPlayer().getId()}) }}`" class="cursor-pointer p-2 col-span-3 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+                        <div class="text-center">
+                            {{ player.getPlayer().getFirstname() }} {{ player.getPlayer().getLastname() }}
+                            {% if player.getPlayer().arrival.winter == true and (season.getName()|slice(0,4) + 1) == player.getPlayer().arrival.date %}
+                                <div class="text-xs">(arrivé en jan.)</div>
+                            {% elseif player.getPlayer().departure and player.getPlayer().departure.winter == true and (season.getName()|slice(0,4) + 1) == player.getPlayer().departure.date %}
+                                <div class="text-xs">(parti en jan.)</div>
+                            {% elseif player.loanInfos.half_season %}
+                                <div class="text-xs">(prêté à partir de jan.)</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div onclick="window.location = `{{ path('player_home', {'teamId':season.getTeam().getId(), 'playerId':player.getPlayer().getId()}) }}`" class="cursor-pointer p-2 col-span-2 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+                        {{ player.getPlayer().position }}
+                    </div>
+                    <div onclick="window.location = `{{ path('player_home', {'teamId':season.getTeam().getId(), 'playerId':player.getPlayer().getId()}) }}`" class="cursor-pointer p-2 col-span-3 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+                        <div class="p-2"><span class="fi fi-{{player.getPlayer().countryFlag}}"></span>&nbsp;<span class="list-country">{{ player.getPlayer().getCountry() }}</span></div>
+                    </div>
+                    <div onclick="window.location = `{{ path('player_home', {'teamId':season.getTeam().getId(), 'playerId':player.getPlayer().getId()}) }}`" class="cursor-pointer p-2 col-span-3 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+                        {{ player.loanInfos.team }} (D{{ player.loanInfos.division }} {{ player.loanInfos.country}})
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+            {% endif %}
+    {% else %}
+        Aucun joueur enregistré pour cette saison<br>
+    {% endif %}
+    <div class="my-6">
+        <a  onclick="showCompetitionForm()" class="btn btn-primary bg-pink-fm p-2 cursor-pointer rounded-md shadow-md font-bold transition-all transition-duration-500 hover:bg-pink-fm-light mx-2">
+            <i class="fas fa-plus"></i>
+            Ajouter une compétition
+        </a>
+        <a href="{{ path('new_season_player', {'teamId': season.getTeam().getId(), 'seasonId': season.id}) }}" class="btn btn-primary bg-pink-fm p-2 rounded-md shadow-md font-bold transition-all duration-500 hover:bg-pink-fm-light mx-2">
+            <i class="fas fa-plus"></i>
+            Ajouter un joueur
+        </a>
+    </div>
+    <div id="form-competition" class="{{ showCompetitionForm }} top-0 w-full h-full fixed flex justify-center items-center bg-black bg-opacity-80">
+        <div class="rounded-md shadow-lg bg-purple-fm pb-6 pt-4 pr-6">
+            {{ form_start(formCompetition) }}
+            <div class="text-2xl font-bold"><i onclick="showCompetitionForm()" class="fa-solid fa-circle-xmark cursor-pointer ml-4 mr-4 transition-all duration-500 hover:text-gray-400"></i> NOUVELLE COMPÉTITION</div>
+            {% for message in app.flashes('error') %}
+                <div class="text-red-600 text-sm font-bold mt-4">{{ message }}</div>
+            {% endfor %}
+            <div class="mx-4 mb-6 inline-block border-2 border-solid border-purple-fm shadow-xl grid grid-cols-6 text-center bg-purple-fm">
+                <div class="px-2 py-1 col-span-6">
+                    {{ form_label(formCompetition.name) }}<br>
+                    {{ form_widget(formCompetition.name, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                </div>
+                <div class="px-2 py-1 col-span-6">
+                    {{ form_label(formCompetition.ranking) }}<br>
+                    {{ form_widget(formCompetition.ranking, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                </div>
+                <div class="p-1 font-bold col-span-1">
+                    M
+                </div>
+                <div class="p-1 font-bold col-span-1">
+                    V
+                </div>
+                <div class="p-1 font-bold col-span-1">
+                    N
+                </div>
+                <div class="p-1 font-bold col-span-1">
+                    D
+                </div>
+                <div class="p-1 font-bold col-span-1">
+                    BP
+                </div>
+                <div class="p-1 font-bold col-span-1">
+                    BC
+                </div>
+                <div class="p-1 col-span-1 bg-purple-fm-light">
+                    {{ form_widget(formCompetition.matches, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                </div>
+                <div class="p-1 col-span-1 bg-purple-fm-light">
+                    {{ form_widget(formCompetition.victories, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                </div>
+                <div class="p-1 col-span-1 bg-purple-fm-light">
+                    {{ form_widget(formCompetition.draws, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                </div>
+                <div class="p-1 col-span-1 bg-purple-fm-light">
+                    {{ form_widget(formCompetition.defeats, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                </div>
+                <div class="p-1 col-span-1 bg-purple-fm-light">
+                    {{ form_widget(formCompetition.g, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                </div>
+                <div class="p-1 col-span-1 bg-purple-fm-light">
+                    {{ form_widget(formCompetition.ga, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                </div>
+            </div>
+            <div class="mt-6 m-auto">
+                {{ form_row(formCompetition.save, {'attr':{'class':'btn btn-primary bg-pink-fm p-2 rounded-md shadow-md font-bold transition-all duration-500 hover:bg-pink-fm-light'}}) }}
+            </div>
+            {{ form_end(formCompetition) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
+    <script>
+        function goToSeason(){
+            if (document.getElementById('season-selector').value != '') {
+                var path = "{{ path('team_season_home', {'teamId': season.getTeam().getId(), 'seasonId': "seasonId"}) }}";
+                window.location = path.replace("seasonId", document.getElementById("season-selector").value);
+            }
+        }
+
+        function showCompetitionForm(){
+            document.getElementById('form-competition').classList.toggle('hidden');
+        }
+
+        let options = {
+            valueNames: [
+                'list-name',
+                'list-poste',
+                'list-country',
+                'list-matchs',
+                'list-titu',
+                'list-buts',
+                'list-passes',
+                'list-cj',
+                'list-cr',
+                'list-note'
+            ]
+        };
+
+        let playersList = new List('players-list', options);
+        playersList.sort('list-matchs', {order: "desc"});
+        playersList.on('updated',()=>{
+            updateLoopIndex();
+        })
+
+        updateLoopIndex();
+        function updateLoopIndex(){
+            let players = document.querySelectorAll('.loop-index');
+            for (let i = 0; i < players.length; i++) {
+                if ((i % 2) === 1) {
+                    players[i].classList.add('bg-purple-fm');
+                    players[i].classList.remove('bg-purple-fm-light');
+                } else {
+                    players[i].classList.add('bg-purple-fm-light');
+                    players[i].classList.remove('bg-purple-fm');
+                }
+            }
+        }
+    </script>
+{% endblock %}

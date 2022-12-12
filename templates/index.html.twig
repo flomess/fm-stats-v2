@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes équipes{% endblock %}
+{% block h1 %}Mes équipes{%endblock%}
+
+{% block body %}
+    {% if teams is not empty %}
+        <div class="flex w-fit justify-center m-auto max-w-screen-lg">
+            {% for team in teams %}
+                <div onclick="window.location = `{{ path('team_home', {'teamId': team.id}) }}`" class="flex w-fit justify-center w-56 p-4 m-4 cursor-pointer bg-purple-fm transition-all duration-500 shadow-lg rounded-md hover:bg-purple-fm-hover">
+                    <div >
+                        {% if team.getLogo() %}
+                            <img src="{{ asset('uploads/logo/'~team.getLogo()) }}" alt="Logo {{ team.getName() }}" class="inline-flex justify-center w-32 h-32">
+                        {% else %}
+                            <img src="{{ asset('assets/img/default_logo.svg') }}" alt="Logo {{ team.getName() }}" class="inline-flex justify-center w-32 h-32">
+                        {% endif %}
+                            <p class="block p-4 text-center text-xl">{{ team.name }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <h1 class="text-3xl m-4">Vous n'avez créé aucune équipe.</h1>
+    {% endif %}
+    <a href="{{ path('new_team') }}" class="btn btn-primary bg-pink-fm p-2 rounded-md shadow-md font-bold transition-all duration-500 hover:bg-pink-fm-light">
+        <i class="fas fa-plus"></i>
+        Ajouter une équipe
+    </a>
+{% endblock %}

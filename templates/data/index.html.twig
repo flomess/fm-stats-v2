@@ -1,0 +1,272 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ team.getName() }}{% endblock %}
+{% block h1 %}Hall of Fame de {{ team.getName() }}{%endblock%}
+
+{% block body %}
+    <div class="mt-12 mb-6 ">
+        {% if seasons %}
+            <select id="season-selector" onchange="goToSeason()" class="text-black mx-3">
+                <option class="py-1" value="">-- Saisons --</option>
+                {% for season in seasons %}
+                    <option class="py-1" value="{{ season.getId() }}">{{ season.getName() }}</option>
+                {% endfor %}
+            </select>
+        {% endif %}
+        <a onclick="showSeasonForm()" class="btn btn-primary bg-pink-fm p-2 rounded-md shadow-md font-bold cursor-pointer mx-3 transition-all duration-500 hover:bg-pink-fm-light">
+            <i class="fas fa-plus"></i>
+            Ajouter une saison
+        </a>
+        <a href="{{ path('new_player', {'teamId': team.id}) }}" class="btn btn-primary bg-pink-fm p-2 rounded-md shadow-md font-bold mx-3 transition-all duration-500 hover:bg-pink-fm-light">
+            <i class="fas fa-plus"></i>
+            Ajouter un joueur
+        </a>
+    </div>
+    {% if players is not null %}
+        <div id="players-list" class="border-2 border-solid border-purple-fm shadow-xl w-fit m-auto mb-20">
+            <div class="flex w-fit m-auto justify-center bg-purple-fm">
+                <div class="p-2 w-44 font-bold col-span-3">
+                    Joueur<button class="sort pl-2" data-sort="list-name"><i class="fa-solid fa-sort fa-sm"></i></button>
+                </div>
+                <div class="p-2 w-24 font-bold col-span-2">
+                    Poste<button class="sort pl-2" data-sort="list-poste"><i class="fa-solid fa-sort fa-sm"></i></button>
+                </div>
+                <div class="p-2 w-44 font-bold col-span-3">
+                    Pays<button class="sort pl-2" data-sort="list-country"><i class="fa-solid fa-sort fa-sm"></i></button>
+                </div>
+                <div class="p-2 w-36 font-bold col-span-3">
+                    Années<button class="sort pl-2" data-sort="list-years"><i class="fa-solid fa-sort fa-sm"></i></button>
+                </div>
+                <div class="p-2 w-12 font-bold col-span-1">
+                    M<button class="sort pl-2" data-sort="list-matchs" data-order="desc"><i class="fa-solid fa-sort fa-sm"></i></button>
+                </div>
+                <div class="p-2 w-12 font-bold col-span-1">
+                    T<button class="sort pl-2" data-sort="list-titu" data-order="desc"><i class="fa-solid fa-sort fa-sm"></i></button>
+                </div>
+                <div class="p-2 w-12 font-bold col-span-1">
+                    B<button class="sort pl-2" data-sort="list-buts" data-order="desc"><i class="fa-solid fa-sort fa-sm"></i></button>
+                </div>
+                <div class="p-2 w-12 font-bold col-span-1">
+                    P<button class="sort pl-2" data-sort="list-passes" data-order="desc"><i class="fa-solid fa-sort fa-sm"></i></button>
+                </div>
+                <div class="p-2 w-14 font-bold col-span-1">
+                    CJ<button class="sort pl-2" data-sort="list-cj" data-order="desc"><i class="fa-solid fa-sort fa-sm"></i></button>
+                </div>
+                <div class="p-2 w-14 font-bold col-span-1">
+                    CR<button class="sort pl-2" data-sort="list-cr" data-order="desc"><i class="fa-solid fa-sort fa-sm"></i></button>
+                </div>
+                <div class="p-2 w-20 font-bold col-span-1">
+                    Note<button class="sort pl-2" data-sort="list-note" data-order="desc"><i class="fa-solid fa-sort fa-sm"></i></button>
+                </div>
+                <div class="p-2 w-44 font-bold col-span-3">
+                    Arrivée
+                </div>
+                <div class="p-2 w-44 font-bold col-span-3">
+                    Départ
+                </div>
+            </div>
+            <div class="list">
+                {% for player in players %}
+                    <div onclick="window.location = `{{ path('player_home', {'teamId':team.getId(), 'playerId':player.getId()}) }}`" class="loop-index flex w-fit m-auto justify-center cursor-pointer hover:bg-purple-fm-light-hover">
+                        <div class="p-2 w-44 flex justify-center items-center">
+                            <div class="text-center">
+                                {{ player.firstname }}&nbsp;<span class="list-name">{{ player.lastname }}</span>
+                            </div>
+                        </div>
+                        <div class="p-2 w-24 flex justify-center items-center list-poste">
+                            {{ player.position }}
+                        </div>
+                        <div class="p-2 w-44 flex justify-center items-center">
+                            <div class="p-2"><span class="fi fi-{{player.countryFlag}}"></span>&nbsp;<span class="list-country h-max">{{ player.country }}</span></div>
+                        </div>
+                        <div class="cursor-pointer p-2 w-36 flex justify-center items-center list-years">
+                            {{ player.arrival.date }}{% if player.arrival.winter %}<span class="text-xs">(jan.)</span>{% endif %}-{% if player.departure %}{{ player.departure.date }}{% if player.departure.winter %}<span class="text-xs">(jan.)</span>{% endif %}{% endif %}
+                        </div>
+                        <div class="p-2 w-12 flex justify-center items-center">
+                            {% set totalMatches = 0 %}
+                            {% for season in player.getPlayerSeasons() %}
+                                {% set totalMatches = totalMatches + season.stats.matches %}
+                            {% endfor %}
+                            <span class="list-matchs">{{ totalMatches }}</span>
+                        </div>
+                        <div class="p-2 w-12 flex justify-center items-center">
+                            {% set totalFirstTeam = 0 %}
+                            {% for season in player.getPlayerSeasons() %}
+                                {% set totalFirstTeam = totalFirstTeam + season.stats.first_team %}
+                            {% endfor %}
+                            <span class="list-titu">{{ totalFirstTeam }}</span>
+                        </div>
+                        <div class="p-2 w-12 flex justify-center items-center">
+                            {% set totalGoals = 0 %}
+                            {% for season in player.getPlayerSeasons() %}
+                                {% set totalGoals = totalGoals + season.stats.goals %}
+                            {% endfor %}
+                            <span class="list-buts">{{ totalGoals }}</span>
+                        </div>
+                        <div class="p-2 w-12 flex justify-center items-center">
+                            {% set totalAssists = 0 %}
+                            {% for season in player.getPlayerSeasons() %}
+                                {% set totalAssists = totalAssists + season.stats.assists %}
+                            {% endfor %}
+                            <span class="list-passes">{{ totalAssists }}</span>
+                        </div>
+                        <div class="p-2 w-14 flex justify-center items-center">
+                            {% set totalYellowCards = 0 %}
+                            {% for season in player.getPlayerSeasons() %}
+                                {% set totalYellowCards = totalYellowCards + season.stats.yellow_cards %}
+                            {% endfor %}
+                            <span class="list-cj">{{ totalYellowCards }}</span>
+                        </div>
+                        <div class="p-2 w-14 flex justify-center items-center">
+                            {% set totalRedCards = 0 %}
+                            {% for season in player.getPlayerSeasons() %}
+                                {% set totalRedCards  = totalRedCards  + season.stats.red_cards %}
+                            {% endfor %}
+                            <span class="list-cr">{{ totalRedCards  }}</span>
+                        </div>
+                        <div class="p-2 w-20 flex justify-center items-center">
+                            {% set averageRate = 0.00 %}
+                            {% set nbrSeasons = 0 %}
+                            {% if player.getPlayerSeasons()|length > 0 %}
+                                {% for season in player.getPlayerSeasons() %}
+                                    {% if season.isLoaned() == false %}
+                                        {% set averageRate = averageRate + season.stats.rate %}
+                                        {% set nbrSeasons = nbrSeasons + 1 %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% if nbrSeasons != 0 %}
+                                    {% set averageRate = averageRate / nbrSeasons %}
+                                {% endif %}                            
+                            {% endif %}
+                            <span class="list-note">{{ averageRate|number_format(2, '.', ' ') }}</span>
+                        </div>
+                        <div class="p-2 w-44 flex justify-center items-center">
+                            <div class="text-center">
+                                {% if player.arrival.type == 'origine' %}
+                                    Origine
+                                {% elseif player.arrival.type == 'forme' %}
+                                    Formé au club
+                                {% else %}
+                                {{ player.arrival.team }}
+                                <br><div>
+                                    (D{{ player.arrival.division }} {{ player.arrival.country }},
+                                    {% if player.arrival.type == 'transfert' %}
+                                        {{ player.arrival.amount }})
+                                    {% elseif player.arrival.type == 'p.o.a.' %}
+                                        p. + {{ player.arrival.amount }})
+                                    {% else %}
+                                        {{ player.arrival.type }})
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="p-2 w-44 flex justify-center items-center">
+                            <div class="text-center">
+                                {% if player.departure  %}
+                                    {% if player.departure.type == 'retraite' %}
+                                        Retraite
+                                    {% elseif player.departure.type == 'libre' %}
+                                        Libre
+                                    {% else %}
+                                    {{ player.departure.team }}
+                                    <br><div>
+                                        (D{{ player.departure.division }} {{ player.departure.country }},
+                                        {% if player.departure.type == 'transfert' %}
+                                            {{ player.departure.amount }})
+                                        {% elseif player.departure.type == 'p.o.a.' %}
+                                            p. + {{ player.departure.amount }})
+                                        {% else %}
+                                            {{ player.departure.type }})
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="w-100 flex justify-center text-2xl">
+                <div class="pagination text-bold list-none absolute mt-4"></div>
+            </div>
+        </div>
+    {% else %}
+        Aucun joueur enregistré dans cette équipe
+    {% endif %}
+    <div id="form-season" class="{{ showSeasonForm }} top-0 w-full h-full fixed flex justify-center items-center bg-black bg-opacity-80">
+        <div class="rounded-md shadow-lg bg-purple-fm pb-6 pt-4 pr-6">
+            {{ form_start(formSeason) }}
+            <div class="text-2xl font-bold"><i onclick="showSeasonForm()" class="fa-solid fa-circle-xmark cursor-pointer ml-4 mr-4 transition-all transition-duration-150 hover:text-gray-400"></i> NOUVELLE SAISON</div>
+            {% for message in app.flashes('error') %}
+                <div class="text-red-600 text-sm font-bold mt-4">{{ message }}</div>
+            {% endfor %}
+            <div class="grid grid-cols-3 gap-1 mt-4 text-center">
+                <div class="col-span-3">
+                    {{ form_label(formSeason.name) }}
+                </div>
+                <div class="col-span-3">
+                    {{ form_widget(formSeason.name, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                </div>
+            </div>
+            <div class="mt-6 m-auto">
+                {{ form_row(formSeason.save, {'attr':{'class':'btn btn-primary bg-pink-fm p-2 rounded-md shadow-md font-bold transition-all transition-duration-150 hover:bg-pink-fm-light'}}) }}
+            </div>
+            {{ form_end(formSeason) }}
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
+    <script>
+        function goToSeason(){
+            if (document.getElementById('season-selector').value != '') {
+                var path = "{{ path('team_season_home', {'teamId': team.id, 'seasonId': "seasonId"}) }}";
+                window.location = path.replace("seasonId", document.getElementById("season-selector").value);
+            }
+        }
+
+        function showSeasonForm(){
+            document.getElementById('form-season').classList.toggle('hidden');
+        }
+
+        let options = {
+            valueNames: [
+                'list-name',
+                'list-poste',
+                'list-country',
+                'list-years',
+                'list-matchs',
+                'list-titu',
+                'list-buts',
+                'list-passes',
+                'list-cj',
+                'list-cr',
+                'list-note'
+            ],
+            page: 30,
+            pagination: true
+        };
+
+        let playersList = new List('players-list', options);
+        playersList.sort('list-matchs', {order: "desc"});
+        playersList.on('updated',()=>{
+            updateLoopIndex();
+        })
+
+        updateLoopIndex();
+        function updateLoopIndex(){
+            let players = document.querySelectorAll('.loop-index');
+            for (let i = 0; i < players.length; i++) {
+                if ((i % 2) === 1) {
+                    players[i].classList.add('bg-purple-fm');
+                    players[i].classList.remove('bg-purple-fm-light');
+
+                } else {
+                    players[i].classList.add('bg-purple-fm-light');
+                    players[i].classList.remove('bg-purple-fm');
+                }
+            }
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Carte{% endblock %}
+{% block h1 %}Carte de {{ team.getName() }}{%endblock%}
+{% block body %}
+        <div id="regions_div" class="w-5/6 m-auto mt-4 rounded-lg shadow-lg"></div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {
+            'packages':['geochart'],
+        });
+        google.charts.setOnLoadCallback(drawRegionsMap);
+
+        function drawRegionsMap() {
+            var data = google.visualization.arrayToDataTable([
+                ['Pays', 'Joueurs'],
+                {% for country in countries %}
+                ['{{ country.country }}', {{ country.players }}],
+                {% endfor %}
+            ]);
+
+            var options = {
+                colorAxis: {colors: ['#3c2f6f', '#210d35'], maxValue: '10'},
+                datalessRegionColor: '#625b82',
+                backgroundColor: '#0d0b16',
+                magnifyingGlass: {enable: true, zoomFactor: 9.5},
+                displayMode: 'regions',
+                domain: 'IN'
+            };
+
+            var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
+
+            chart.draw(data, options);
+        }
+    </script>
+{% endblock %}

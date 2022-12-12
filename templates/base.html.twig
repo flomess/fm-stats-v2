@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Home{% endblock %} | FM Stats</title>        
+        <link rel="icon" href="{{ asset('assets/img/favicon.svg') }}" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@6.6.6/css/flag-icons.min.css"/>
+        {{ encore_entry_link_tags('style') }}
+        {% block stylesheets %}{% endblock %}
+        <script src="https://kit.fontawesome.com/8713a9ce71.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-purple-fm">
+        <div class="main bg-purple-fm flex justify-center min-h-screen text-white">        
+            <div class="text-center relative w-screen">
+                {% if app.user %}
+                    {% include 'navbar.html.twig' %}
+                {% endif %}
+                <div class="left-0 my-2 inline-flex items-center">                    
+                    <h1 class="text-3xl">{% block h1 %}{%endblock%}</h1>
+                </div>
+                {% block body %}{% endblock %}
+            </div>
+        </div>        
+    </body>       
+    {% block scripts %}{% endblock %}
+</html>

@@ -1,0 +1,267 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ player.getFirstname() }} {{ player.getLastname() }}{% endblock %}
+{% block h1 %}{{ player.getFirstname() }} {{ player.getLastname() }}{%endblock%}
+{% block body %} 
+    <div class="text-lg">{{ player.position }} - <span class="fi fi-{{player.countryFlag}}"></span>&nbsp;{{ player.country }}</div>
+    <div class="flex justify-center my-6">
+        <div class="grid grid-cols-2">
+            <div class="w-auto min-w-52 mx-24 inline-block border-2 border-solid border-purple-fm shadow-xl text-center bg-purple-fm">
+                <div class="p-1 font-bold">
+                    Arrivée
+                </div>
+                <div class="p-1 bg-purple-fm-light">
+                    {{ player.arrival.date }} {% if player.arrival.winter %}<span class="text-xs">(jan.)</span>{% endif %}<br>
+                    {% if player.arrival.type == 'origine' %}
+                        Origine
+                    {% elseif player.arrival.type == 'forme' %}
+                        Formé au club
+                    {% else %}
+                        {{ player.arrival.team }} (D{{ player.arrival.division }} {{ player.arrival.country }},
+                        {% if player.arrival.type == 'transfert' %}
+                            {{ player.arrival.amount }})
+                        {% elseif player.arrival.type == 'p.o.a.' %}
+                            p. + {{ player.arrival.amount }})
+                        {% else %}
+                            {{ player.arrival.type }})
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            {% if player.departure %}
+            <div class="w-auto mx-24 inline-block border-2 border-solid border-purple-fm shadow-xl text-center bg-purple-fm">
+                <div class="p-1 font-bold">
+                    Départ
+                </div>
+                <div class="p-1 bg-purple-fm-light">
+                    {{ player.departure.date }} {% if player.departure.winter %}<span class="text-xs">(jan.)</span>{% endif %}<br>
+                    {% if player.departure.type == 'retraite' %}
+                        Retraite
+                    {% elseif player.departure.type == 'libre' %}
+                        Libre
+                    {% else %}
+                        {{ player.departure.team }} (D{{ player.departure.division }} {{ player.departure.country }},
+                        {% if player.departure.type == 'transfert' %}
+                            {{ player.departure.amount }})
+                        {% elseif player.departure.type == 'p.o.a.' %}
+                            p. + {{ player.departure.amount }})
+                        {% else %}
+                            {{ player.departure.type }})
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            {% else %}
+            <div class="flex justify-center items-center">
+                <a onclick="showDepartureForm()" class="btn btn-primary bg-pink-fm p-2 rounded-md shadow-md font-bold cursor-pointer mx-3 transition-all transition-duration-150 hover:bg-pink-fm-light">
+                    <i class="fas fa-plus"></i>
+                    Marquer le Départ
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="border-2 border-solid border-purple-fm shadow-xl w-1/2 m-auto mb-12 grid grid-cols-9 text-center bg-purple-fm">
+        <div class="p-2 font-bold col-span-2">
+            Saison
+        </div>
+        <div class="p-2 font-bold col-span-1">
+            M
+        </div>
+        <div class="p-2 font-bold col-span-1">
+            T
+        </div>
+        <div class="p-2 font-bold col-span-1">
+            B
+        </div>
+        <div class="p-2 font-bold col-span-1">
+            P
+        </div>
+        <div class="p-2 font-bold col-span-1">
+            CJ
+        </div>
+        <div class="p-2 font-bold col-span-1">
+            CR
+        </div>
+        <div class="p-2 font-bold col-span-1">
+            Note
+        </div>
+        {% set rank = 0 %}
+        {% for season in player.getPlayerSeasons() %}
+            {% set rank = rank + 1 %}
+        <div class="p-2 col-span-2 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+            <div>
+            {{ season.getTeamSeason().getName() }} 
+            {% if player.arrival.winter == true and (season.getTeamSeason().getName()|slice(0,4) + 1) == player.arrival.date %}
+                <div class="text-xs">(arrivé en jan.)</div>
+            {% elseif player.departure and player.departure.winter == true and (season.getTeamSeason().getName()|slice(0,4) + 1) == player.departure.date %}
+                <div class="text-xs">(parti en jan.)</div>
+            {% endif %}           
+            </div>
+        </div>
+        {% if season.isLoaned() %}
+            <div class="p-2 col-span-7 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">en prêt à {{ season.loanInfos.team }} (D{{ season.loanInfos.division }} {{ season.loanInfos.country}}){% if season.loanInfos.half_season %} à partir de janvier{% endif %}</div>
+        {% else %}
+            <div class="p-2 col-span-1 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+                {{ season.stats.matches }}
+            </div>
+            <div class="p-2 col-span-1 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+                {{ season.stats.first_team }}
+            </div>
+            <div class="p-2 col-span-1 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+                {{ season.stats.goals }}
+            </div>
+            <div class="p-2 col-span-1 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+                {{ season.stats.assists }}
+            </div>
+            <div class="p-2 col-span-1 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+                {{ season.stats.yellow_cards }}
+            </div>
+            <div class="p-2 col-span-1 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+                {{ season.stats.red_cards }}
+            </div>
+            <div class="p-2 col-span-1 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+                {{ season.stats.rate|number_format(2, '.', ' ') }}
+            </div>
+        {% endif %}
+        {% endfor %}
+        {% set rank = rank + 1 %}
+        <div class="font-bold p-2 col-span-2 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+            TOTAL
+        </div>
+        <div class="font-bold p-2 col-span-1 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+            {% set totalMatches = 0 %}
+            {% for season in player.getPlayerSeasons() %}
+                {% set totalMatches = totalMatches + season.stats.matches %}
+            {% endfor %}
+            {{ totalMatches }}
+        </div>
+        <div class="font-bold p-2 col-span-1 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+            {% set totalFirstTeam = 0 %}
+            {% for season in player.getPlayerSeasons() %}
+                {% set totalFirstTeam = totalFirstTeam + season.stats.first_team %}
+            {% endfor %}
+            {{ totalFirstTeam }}
+        </div>
+        <div class="font-bold p-2 col-span-1 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+            {% set totalGoals = 0 %}
+            {% for season in player.getPlayerSeasons() %}
+                {% set totalGoals = totalGoals + season.stats.goals %}
+            {% endfor %}
+            {{ totalGoals }}
+        </div>
+        <div class="font-bold p-2 col-span-1 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+            {% set totalAssists = 0 %}
+            {% for season in player.getPlayerSeasons() %}
+                {% set totalAssists = totalAssists + season.stats.assists %}
+            {% endfor %}
+            {{ totalAssists }}
+        </div>
+        <div class="font-bold p-2 col-span-1 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+            {% set totalYellowCards = 0 %}
+            {% for season in player.getPlayerSeasons() %}
+                {% set totalYellowCards = totalYellowCards + season.stats.yellow_cards %}
+            {% endfor %}
+            {{ totalYellowCards }}
+        </div>
+        <div class="font-bold p-2 col-span-1 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+            {% set totalRedCards = 0 %}
+            {% for season in player.getPlayerSeasons() %}
+                {% set totalRedCards = totalRedCards + season.stats.red_cards %}
+            {% endfor %}
+            {{ totalRedCards }}
+        </div>
+        <div class="font-bold p-2 col-span-1 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+            {% set averageRate = 0.00 %}
+            {% set nbrSeasons = 0 %}
+            {% if player.getPlayerSeasons()|length > 0 %}
+                {% for season in player.getPlayerSeasons() %}
+                    {% if season.isLoaned() == false %}
+                        {% set averageRate = averageRate + season.stats.rate %}
+                        {% set nbrSeasons = nbrSeasons + 1 %}
+                    {% endif %}
+                {% endfor %}
+                {% if nbrSeasons != 0 %}
+                    {% set averageRate = averageRate / nbrSeasons %}
+                {% endif %}
+            {% endif %}
+            {{ averageRate|number_format(2, '.', ' ') }}
+        </div>
+    </div>
+    {% if player.departure is empty %}
+        <div id="form-departure" class="{{ showDepartureForm }} top-0 w-full h-full fixed flex justify-center items-center bg-black bg-opacity-80">
+            <div class="rounded-lg shadow-lg bg-purple-fm pb-6 pt-4 px-6">
+                {{ form_start(form) }}
+                <div class="text-2xl font-bold"><i onclick="closeDepartureForm()" class="fa-solid fa-circle-xmark cursor-pointer ml-4 mr-4 transition-all transition-duration-150 hover:text-gray-400"></i> DÉPART</div>
+                {% for message in app.flashes('error') %}
+                    <div class="text-red-600 text-sm font-bold mt-4">{{ message }}</div>
+                {% endfor %}
+                <div class="grid grid-cols-3 mt-6 text-center m-auto">
+                    <div class="col-span-1">
+                        {{ form_label(form.departure_type) }}
+                    </div>
+                    <div class="col-span-1">
+                        {{ form_label(form.departure_date) }}
+                    </div>
+                    <div class="col-span-1">
+                        {{ form_label(form.departure_winter) }}
+                    </div>
+                    <div class="col-span-1">
+                        {{ form_widget(form.departure_type, {'attr':{'class':'typeTransfert p-1 text-purple-fm rounded-sm'}}) }}
+                    </div>
+                    <div class="col-span-1">
+                        {{ form_widget(form.departure_date, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                    </div>
+                    <div class="col-span-1">
+                        {{ form_widget(form.departure_winter, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                    </div>
+                </div>
+                <div class="grid grid-cols-7 gap-1 mt-4 w-3/4 text-center clubTransfert">
+                    <div class="col-span-3">
+                        {{ form_label(form.departure_team) }}
+                    </div>
+                    <div class="col-span-1">
+                        {{ form_label(form.departure_team_division) }}
+                    </div>
+                    <div class="col-span-3">
+                        {{ form_label(form.departure_team_country) }}
+                    </div>
+                    <div class="col-span-3">
+                        {{ form_widget(form.departure_team, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                    </div>
+                    <div class="col-span-1">
+                        {{ form_widget(form.departure_team_division, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                    </div>
+                    <div class="col-span-3">
+                        {{ form_widget(form.departure_team_country, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 mt-4 text-center transfMontant">
+                    <div class="col-span-3">
+                        {{ form_label(form.departure_amount) }}
+                    </div>
+                    <div class="col-span-3">
+                        {{ form_widget(form.departure_amount, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                    </div>
+                </div>
+                <div class="mt-12 m-auto">
+                    {{ form_row(form.save, {'attr':{'class':'btn btn-primary bg-pink-fm p-2 rounded-md shadow-md font-bold transition-all transition-duration-150 hover:bg-pink-fm-light'}}) }}
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function showDepartureForm(){
+            document.getElementById('form-departure').classList.remove('hidden');
+        }
+
+        function closeDepartureForm(){
+            document.getElementById('form-departure').classList.add('hidden');
+        }
+    </script>
+    {{ encore_entry_script_tags('showDepartureType') }}
+{% endblock %}
