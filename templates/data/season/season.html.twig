@@ -13,9 +13,8 @@
                 <i class="fa-solid fa-caret-left fa-xl text-gray-500"></i>
         {% endif %}
         <select id="season-selector" onchange="goToSeason()" class="text-black">
-            <option class="py-1" value="">-- Saisons --</option>
-            {% for season in teamSeasons %}
-                <option class="py-1" value="{{ season.getId() }}">{{ season.getName() }}</option>
+            {% for teamSeason in teamSeasons %}
+                <option class="py-1" {% if teamSeason.getId() == season.getId() %}selected{% endif %} value="{{ teamSeason.getId() }}">{{ teamSeason.getName() }}</option>
             {% endfor %}
         </select>
         {% if nextSeason %}
