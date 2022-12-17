@@ -89,7 +89,7 @@
             Note
         </div>
         {% set rank = 0 %}
-        {% for season in player.getPlayerSeasons() %}
+        {% for season in player.getPlayerSeasons() | sort((a, b) => a.getTeamSeason().getName() <=> b.getTeamSeason().getName()) %}
             {% set rank = rank + 1 %}
         <div class="p-2 col-span-2 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
             <div>
