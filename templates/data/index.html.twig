@@ -144,6 +144,8 @@
                             <div class="text-center">
                                 {% if player.arrival.type == 'origine' %}
                                     Origine
+                                {% elseif player.arrival.type == 'libre' %}
+                                    Libre
                                 {% elseif player.arrival.type == 'forme' %}
                                     Formé au club
                                 {% else %}

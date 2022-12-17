@@ -14,6 +14,8 @@
                     {{ player.arrival.date }} {% if player.arrival.winter %}<span class="text-xs">(jan.)</span>{% endif %}<br>
                     {% if player.arrival.type == 'origine' %}
                         Origine
+                    {% elseif player.arrival.type == 'libre' %}
+                        Libre
                     {% elseif player.arrival.type == 'forme' %}
                         Formé au club
                     {% else %}

@@ -53,6 +53,7 @@ class NewPlayerFormType extends AbstractType
                     "Fin de Contrat" => "f.c.",
                     "Formé au Club" => "forme",
                     "Prêt avec Option d'Achat" => "p.o.a.",
+                    "Libre" => "libre",
                     "Origine" => "origine"
                 ],
             ])

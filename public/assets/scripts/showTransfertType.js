@@ -64,5 +64,13 @@ function showTypeTransfertOptions(typeTransfert) {
             document.querySelector('.arrival-amount-input').required = false
             document.querySelector('.arrival-date').value = '2020'
             break;
+        case 'libre':
+            document.querySelector('.arrival-team').style.display = "none"
+            for (k in arrivalTeamInputs) {
+                arrivalTeamInputs[k].required = false
+            }
+            document.querySelector('.arrival-amount').style.display = "none"
+            document.querySelector('.arrival-amount-input').required = false
+            break;
     }
 }
