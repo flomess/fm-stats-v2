@@ -891,7 +891,7 @@ class AssociateCountry extends AbstractController
             "Turkménistan" => "Turkmenistan",
             "Turquie" => "Turkey",
             "Tuvalu" => "Tuvalu",
-            "Ukraine" => "Ukrain",
+            "Ukraine" => "Ukraine",
             "Uruguay" => "Uruguay",
             "Vanuatu" => "Vanuatu",
             "Vatican" => "Vatican City",
