@@ -4,6 +4,7 @@ namespace App\Controller\Data;
 
 use App\Form\NewPlayerFormType;
 use App\Form\NewTeamSeasonFormType;
+use App\Repository\PlayerRepository;
 use App\Repository\TeamRepository;
 use App\Service\AssociateCountry;
 use Doctrine\ORM\EntityManagerInterface;
@@ -73,7 +74,7 @@ class TeamController extends AbstractController
     /**
      * @Route("/new-player", name="new_player")
      */
-    public function newPlayer(Request $request, EntityManagerInterface $entityManager, AssociateCountry $associateCountry, TeamRepository $teamRepository, $teamId): Response
+    public function newPlayer(Request $request, EntityManagerInterface $entityManager, AssociateCountry $associateCountry, TeamRepository $teamRepository, PlayerRepository $playerRepository, $teamId): Response
     {
         // check if user has rights on team
         $team = $teamRepository->find($teamId);
@@ -107,7 +108,8 @@ class TeamController extends AbstractController
             $player->setCountryFlag($associateCountry->associateCountryForFlag($form->get('country')->getData()));
             $entityManager->persist($player);
             $entityManager->flush();
-            return $this->redirectToRoute('team_home', ['teamId' => $teamId]);
+
+            return $this->redirectToRoute('player_home', ['teamId' => $teamId, 'playerId' => $player->getId()]);
         }
 
         return $this->render('data/new-player.html.twig', [
