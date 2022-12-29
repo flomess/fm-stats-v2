@@ -6,6 +6,7 @@ use App\Form\NewPlayerFormType;
 use App\Form\NewTeamSeasonFormType;
 use App\Repository\PlayerRepository;
 use App\Repository\TeamRepository;
+use App\Repository\TeamSeasonRepository;
 use App\Service\AssociateCountry;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -74,7 +75,7 @@ class TeamController extends AbstractController
     /**
      * @Route("/new-player", name="new_player")
      */
-    public function newPlayer(Request $request, EntityManagerInterface $entityManager, AssociateCountry $associateCountry, TeamRepository $teamRepository, PlayerRepository $playerRepository, $teamId): Response
+    public function newPlayer(Request $request, EntityManagerInterface $entityManager, AssociateCountry $associateCountry, TeamRepository $teamRepository, TeamSeasonRepository $teamSeasonRepository, $teamId): Response
     {
         // check if user has rights on team
         $team = $teamRepository->find($teamId);
@@ -83,7 +84,7 @@ class TeamController extends AbstractController
         }
 
         // new player form
-        $form = $this->createForm(NewPlayerFormType::class, null, ['countries' => $associateCountry->getCountryList(), 'clubCountries' => $associateCountry->getCountriesForClub()]);
+        $form = $this->createForm(NewPlayerFormType::class, null, ['countries' => $associateCountry->getCountryList(), 'clubCountries' => $associateCountry->getCountriesForClub(), 'years' => $teamSeasonRepository->getYears($team)]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $player = $form->getData();

@@ -5,6 +5,7 @@ namespace App\Controller\Data;
 use App\Form\PlayerDepartureFormType;
 use App\Repository\PlayerRepository;
 use App\Repository\TeamRepository;
+use App\Repository\TeamSeasonRepository;
 use App\Service\AssociateCountry;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,7 +21,7 @@ class PlayerController extends AbstractController
     /**
      * @Route("/", name="player_home")
      */
-    public function showPlayer(Request $request, EntityManagerInterface $entityManager, TeamRepository $teamRepository, PlayerRepository $playerRepository, AssociateCountry $associateCountry, $playerId, $teamId): Response
+    public function showPlayer(Request $request, EntityManagerInterface $entityManager, TeamRepository $teamRepository, TeamSeasonRepository $teamSeasonRepository, PlayerRepository $playerRepository, AssociateCountry $associateCountry, $playerId, $teamId): Response
     {
         // check if user has rights on team
         $team = $teamRepository->find($teamId);
@@ -31,7 +32,7 @@ class PlayerController extends AbstractController
         $player = $playerRepository->find($playerId);
         $showDepartureForm = 'hidden';
 
-        $form = $this->createForm(PlayerDepartureFormType::class, null, ['clubCountries' => $associateCountry->getCountriesForClub()]);
+        $form = $this->createForm(PlayerDepartureFormType::class, null, ['clubCountries' => $associateCountry->getCountriesForClub(), 'years' => $teamSeasonRepository->getYears($team)]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $departure = [

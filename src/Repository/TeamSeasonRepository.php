@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\TeamSeason;
+use App\Entity\Team;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -39,28 +40,50 @@ class TeamSeasonRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return TeamSeason[] Returns an array of TeamSeason objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('t.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function getYears(Team $team)
+    {
+        $lastSeason = $this->createQueryBuilder('t')
+            ->where('t.team = :team')
+            ->setParameter('team', $team)
+            ->orderBy('t.name', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getResult();
 
-//    public function findOneBySomeField($value): ?TeamSeason
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $lastYear = substr($lastSeason[0]->getName(), '-4');
+
+        // make array of all previous years
+        $years[$lastYear + 1] = $lastYear + 1;
+        while ($lastYear > 2021) {
+            $years[$lastYear] = $lastYear;
+            $lastYear--;
+        }
+
+        return array_reverse($years, true);
+    }
+
+    //    /**
+    //     * @return TeamSeason[] Returns an array of TeamSeason objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
+    //        return $this->createQueryBuilder('t')
+    //            ->andWhere('t.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->orderBy('t.id', 'ASC')
+    //            ->setMaxResults(10)
+    //            ->getQuery()
+    //            ->getResult()
+    //        ;
+    //    }
+
+    //    public function findOneBySomeField($value): ?TeamSeason
+    //    {
+    //        return $this->createQueryBuilder('t')
+    //            ->andWhere('t.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
 }

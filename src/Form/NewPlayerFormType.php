@@ -62,21 +62,7 @@ class NewPlayerFormType extends AbstractType
                 'mapped' => false,
                 'label' => 'Année',
                 'placeholder' => '-- Année --',
-                'choices' => [
-                    "2020" => "2020",
-                    "2021" => "2021",
-                    "2022" => "2022",
-                    "2023" => "2023",
-                    "2024" => "2024",
-                    "2025" => "2025",
-                    "2026" => "2026",
-                    "2027" => "2027",
-                    "2028" => "2028",
-                    "2029" => "2029",
-                    "2030" => "2030",
-                    "2031" => "2031",
-                    "2032" => "2032",
-                ],
+                'choices' => $options["years"]
             ])
             ->add('arrival_winter', CheckboxType::class, [
                 'required' => false,
@@ -125,6 +111,7 @@ class NewPlayerFormType extends AbstractType
             'data_class' => Player::class,
             'clubCountries' => [],
             'countries' => [],
+            'years' => []
         ]);
     }
 }
