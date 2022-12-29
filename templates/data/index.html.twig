@@ -129,7 +129,7 @@
                             {% set nbrSeasons = 0 %}
                             {% if player.getPlayerSeasons()|length > 0 %}
                                 {% for season in player.getPlayerSeasons() %}
-                                    {% if season.isLoaned() == false %}
+                                    {% if season.isLoaned() == false and season.stats.rate != 0 %}
                                         {% set averageRate = averageRate + season.stats.rate %}
                                         {% set nbrSeasons = nbrSeasons + 1 %}
                                     {% endif %}
