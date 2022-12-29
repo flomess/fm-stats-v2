@@ -17,7 +17,7 @@ class NewPlayerFormType extends AbstractType
     {
         $builder
             ->add('firstname', TextType::class, [
-                'required' => true,
+                'required' => false,
                 'label' => 'Prénom',
             ])
             ->add('lastname', TextType::class, [
