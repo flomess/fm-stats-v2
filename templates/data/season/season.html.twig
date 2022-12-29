@@ -110,7 +110,7 @@
                 </div>
             </div>
             <div class="list">
-                {% for player in players %}
+                {% for player in players | sort((a, b) => a.getPlayer().getLastname() <=> b.getPlayer().getLastname()) %}
                     {% if player.isLoaned() == false %}
                         <div onclick="window.location = `{{ path('player_home', {'teamId':season.getTeam().getId(), 'playerId':player.getPlayer().getId()}) }}`" class="loop-index flex w-fit m-auto justify-center cursor-pointer hover:bg-purple-fm-light-hover">
                             <div class="p-2 w-44 flex justify-center items-center">

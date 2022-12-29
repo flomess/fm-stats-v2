@@ -66,7 +66,7 @@
                 </div>
             </div>
             <div class="list">
-                {% for player in players %}
+                {% for player in players | sort((a, b) => a.getLastname() <=> b.getLastname()) %}
                     <div onclick="window.location = `{{ path('player_home', {'teamId':team.getId(), 'playerId':player.getId()}) }}`" class="loop-index flex w-fit m-auto justify-center cursor-pointer hover:bg-purple-fm-light-hover">
                         <div class="p-2 w-44 flex justify-center items-center">
                             <div class="text-center">
