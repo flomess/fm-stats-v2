@@ -28,7 +28,7 @@
     {% if season.getCompetitions() is not null %}
         <div class="flex justify-center my-2">
         {% for competition in season.getCompetitions() %}
-            <div class="w-54 mx-2 inline-block border-2 border-solid border-purple-fm shadow-xl grid grid-cols-6 text-center bg-purple-fm">
+            <div class="w-54 mx-2 border-2 border-solid border-purple-fm shadow-xl grid grid-cols-6 text-center bg-purple-fm">
                 <div class="px-2 py-1 font-bold col-span-6">
                     {{ competition.name }}
                 </div>
@@ -75,7 +75,7 @@
         {% endfor %}
         </div>
     {% endif %}
-    {% if players is not null %}
+    {% if players|length > 0 %}
         <div id="players-list" class="border-2 border-solid border-purple-fm shadow-xl w-fit m-auto mb-8">
             <div class="flex w-fit m-auto justify-center bg-purple-fm">
                 <div class="p-2 w-44 font-bold col-span-3">
@@ -221,7 +221,7 @@
             {% for message in app.flashes('error') %}
                 <div class="text-red-600 text-sm font-bold mt-4">{{ message }}</div>
             {% endfor %}
-            <div class="mx-4 mb-6 inline-block border-2 border-solid border-purple-fm shadow-xl grid grid-cols-6 text-center bg-purple-fm">
+            <div class="mx-4 mb-6 border-2 border-solid border-purple-fm shadow-xl grid grid-cols-6 text-center bg-purple-fm">
                 <div class="px-2 py-1 col-span-6">
                     {{ form_label(formCompetition.name) }}<br>
                     {{ form_widget(formCompetition.name, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
