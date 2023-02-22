@@ -4,16 +4,26 @@
       <div class="flex flex-1 items-center justify-center">      
         <div class="flex space-x-4">
           <a href="{{path('home_teams')}}" class="hover:bg-purple-fm-light text-white px-3 py-2 rounded-md text-sm font-medium"><i class="fa-solid fa-home fa-lg"></i></a>
-          <a href="#" onclick="dropdownMenu()" class="hover:bg-purple-fm-light px-3 py-2 rounded-md text-sm font-medium">Teams<i class="ml-2 fa-solid fa-caret-down"></i></a>
-          <ul class="dropdown-menu absolute hidden z-50 float-left list-none bg-purple-fm text-left rounded-b-md shadow-lg mt-9 m-0 bg-clip-padding border-none">
             {% for team in app.user.getTeams() %}
-              <li>
-                <a class="dropdown-item text-sm py-2 px-4 block w-full whitespace-nowrap hover:bg-purple-fm-light" href="{{ path('team_home', {'teamId': team.id}) }}">
-                  {{team.name}}
-                </a>
-              </li>
+            <a href="#" onclick="dropdownMenu()" class="hover:bg-purple-fm-light px-3 py-2 rounded-md text-sm font-medium">{{ team.name }}<i class="ml-2 fa-solid fa-caret-down"></i></a>
+              <ul class="dropdown-menu hidden absolute z-50 float-left list-none bg-purple-fm text-left rounded-b-md shadow-lg mt-9 m-0 bg-clip-padding border-none">
+                <li>
+                  <a class="dropdown-item text-sm py-2 px-4 block w-full whitespace-nowrap hover:bg-purple-fm-light" href="{{ path('team_home', {'teamId': team.id}) }}">
+                    <i class="w-6 fa-solid fa-ranking-star"></i> Hall of Fame
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item text-sm py-2 px-4 block w-full whitespace-nowrap hover:bg-purple-fm-light" href="{{ path('countries_home', {'teamId': team.id}) }}">
+                    <i class="w-6 fa-solid fa-earth-europe"></i> Pays
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item text-sm py-2 px-4 block w-full whitespace-nowrap hover:bg-purple-fm-light" href="{{ path('map_home', {'teamId': team.id}) }}">
+                    <i class="w-6 fa-solid fa-map"></i> Carte
+                  </a>
+                </li>
+              </ul>             
             {% endfor %}
-          </ul> 
         </div>
       </div>
       <a href="{{path('app_logout')}}" class="hover:bg-purple-fm-light right-0 text-white px-3 py-2 rounded-md text-sm font-medium"><i class="fa-solid fa-right-from-bracket fa-lg"></i></a>
