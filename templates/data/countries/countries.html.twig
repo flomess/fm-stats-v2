@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nationalités{% endblock %}
+{% block h1 %}Nationalités de {{ team.getName() }}{%endblock%}
+{% block body %}
+        {% for country in countries %}
+            <div class="text-lg"><span onclick="showTableCountry('{{country.country}}')"><i class="fa-solid fa-sort-down fa-md"></i></span>&nbsp;<span class="fi fi-{{country.flag}}"></span>&nbsp;{{ country.country }} - {{ country.nb_matches }} matchs</div>
+                <div id="table-{{country.country}}" class="hidden border-2 border-solid border-purple-fm shadow-xl w-1/2 m-auto mb-12 grid grid-cols-6 text-center bg-purple-fm">
+                    <div class="p-2 font-bold col-span-2">
+                        Joueur
+                    </div>
+                    <div class="p-2 font-bold col-span-1">
+                        Poste
+                    </div>
+                    <div class="p-2 font-bold col-span-2">
+                        Années
+                    </div>
+                    <div class="p-2 font-bold col-span-1">
+                        Matchs
+                    </div>
+                    {% set rank = 0 %}
+                    {% for player in country.players | sort((b, a) => a.nb_matches <=> b.nb_matches) %}
+                        {% set rank = rank + 1 %}
+                        <div class="p-2 col-span-2 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+                            {{ player.name }}
+                        </div>
+                        <div class="p-2 col-span-1 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+                            {{ player.position }}
+                        </div>
+                        <div class="p-2 col-span-2 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+                            {{ player.arrival.date }}{% if player.arrival.winter %}<span class="text-xs">(jan.)</span>{% endif %}-{% if player.departure %}{{ player.departure.date }}{% if player.departure.winter %}<span class="text-xs">(jan.)</span>{% endif %}{% endif %}
+                        </div>
+                        <div class="p-2 col-span-1 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+                            {{ player.nb_matches }}
+                        </div>
+                    {% endfor %}                    
+                </div>
+        {% endfor %}
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function showTableCountry(country) {
+            if(document.getElementById('table-' + country).classList.contains('hidden')){
+                document.getElementById('table-' + country).classList.remove('hidden')
+            } else {
+                document.getElementById('table-' + country).classList.add('hidden')
+            }
+        }
+    </script>
+{% endblock %}
