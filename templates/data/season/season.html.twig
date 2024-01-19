@@ -120,8 +120,12 @@
                                         <br><div class="text-xs">(arrivé en jan.)</div>
                                     {% elseif player.getPlayer().departure and player.getPlayer().departure.winter == true and (season.getName()|slice(0,4) + 1) == player.getPlayer().departure.date %}
                                         <br><div class="text-xs">(parti en jan.)</div>
-                                    {% elseif player.isLoaned and player.loanInfos.half_season %}
-                                        <br><div class="text-xs">(prêté à partir de jan.)</div>
+                                    {% else %}
+                                        {% for otherSeason in players|filter(otherSeason => otherSeason.getPlayer().getId() == player.getPlayer().getId() and player.getId() != otherSeason.getId()) %}
+                                            {% if otherSeason.isLoaned and otherSeason.loanInfos.half_season %}
+                                                <br><div class="text-xs">(prêté à partir de jan.)</div>
+                                            {% endif %}
+                                        {% endfor %}
                                     {% endif %}
                                 </div>
                             </div>
@@ -180,7 +184,7 @@
                         <div class="text-center">
                             {{ player.getPlayer().getFirstname() }} {{ player.getPlayer().getLastname() }}
                             {% if player.getPlayer().arrival.winter == true and (season.getName()|slice(0,4) + 1) == player.getPlayer().arrival.date %}
-                                <div class="text-xs">(arrivé en jan.)</div>
+                                <div class="text-xs">(arrivé et prêté en jan.)</div>
                             {% elseif player.getPlayer().departure and player.getPlayer().departure.winter == true and (season.getName()|slice(0,4) + 1) == player.getPlayer().departure.date %}
                                 <div class="text-xs">(parti en jan.)</div>
                             {% elseif player.loanInfos.half_season %}
