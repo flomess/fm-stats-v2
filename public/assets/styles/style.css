@@ -52,3 +52,7 @@ button.bg-pink-fm {
 button.bg-pink-fm:hover {
   background-color: #f135d2 !important;
 }
+
+.m-w-fit{
+  min-width: fit-content;
+}
