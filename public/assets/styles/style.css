@@ -56,3 +56,7 @@ button.bg-pink-fm:hover {
 .m-w-fit{
   min-width: fit-content;
 }
+
+.fi {
+  position: inherit;
+}
