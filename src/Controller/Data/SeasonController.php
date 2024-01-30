@@ -5,6 +5,7 @@ namespace App\Controller\Data;
 use App\Entity\PlayerSeason;
 use App\Form\NewCompetitionFormType;
 use App\Form\NewPlayerSeasonFormType;
+use App\Repository\PlayerRepository;
 use App\Repository\TeamRepository;
 use App\Repository\TeamSeasonRepository;
 use App\Service\AssociateCountry;
@@ -157,6 +158,87 @@ class SeasonController extends AbstractController
             'form' => $form->createView(),
             'team' => $team,
             'season' => $teamSeason,
+        ]);
+    }
+
+    /**
+     * @Route("/mercato", name="season_mercato")
+     */
+    public function seasonMercato(Request $request, EntityManagerInterface $entityManager, TeamRepository $teamRepository, TeamSeasonRepository $teamSeasonRepository, AssociateCountry $associateCountry, PlayerRepository $playerRepository, $seasonId, $teamId): Response
+    {
+        // check if user has rights on team
+        $team = $teamRepository->find($teamId);
+        if ($team->getUser() !== $this->getUser()) {
+            return $this->redirectToRoute('home');
+        }
+
+        $season = $teamSeasonRepository->find($seasonId);
+        $players = $season->getPlayerSeasons();
+        $teamSeasons = $teamSeasonRepository->findByTeam($season->getTeam()->getId());
+        $seasonYear = substr($season->getName(), 0, 4);
+
+
+        $previousSeason = null;
+        foreach ($teamSeasons as $teamSeason) {
+            if ($teamSeason->getId() < $seasonId && ($previousSeason == null || $teamSeason->getId() > $previousSeason->getId())) {
+                $previousSeason = $teamSeason;
+            }
+        }
+
+        $nextSeason = null;
+        foreach ($teamSeasons as $teamSeason) {
+            if ($teamSeason->getId() > $seasonId && ($nextSeason == null || $teamSeason->getId() < $nextSeason->getId())) {
+                $nextSeason = $teamSeason;
+            }
+        }
+
+        // get players with arrival date = season year
+        $players = $team->getPlayers();
+        $arrivals = [];
+        $departures = [];
+        foreach ($players as $player) {
+            if (($player->getArrival()['date'] == $seasonYear && $player->getArrival()['winter'] != true)
+            || ($player->getArrival()['date'] == $seasonYear + 1 && $player->getArrival()['winter'] == true)){
+                $arrivals[] = $player;
+            }
+
+            if ($player->getDeparture() && (($player->getDeparture()['date'] == $seasonYear && $player->getDeparture()['winter'] != true)
+            || ($player->getDeparture()['date'] == $seasonYear + 1 && $player->getDeparture()['winter'] == true))){
+                $departures[] = $player;
+            }
+        }
+
+        // sort arrivals by id, but those who arrived in winter are last
+        usort($arrivals, function ($a, $b) {
+            if ($a->getArrival()['winter'] == true && $b->getArrival()['winter'] == false) {
+                return 1;
+            } else if ($a->getArrival()['winter'] == false && $b->getArrival()['winter'] == true) {
+                return -1;
+            } else {
+                return $a->getId() - $b->getId();
+            }
+        });
+
+        // sort departures by id, but those who left in winter are last
+        usort($departures, function ($a, $b) {
+            if ($a->getDeparture()['winter'] == true && $b->getDeparture()['winter'] == false) {
+                return 1;
+            } else if ($a->getDeparture()['winter'] == false && $b->getDeparture()['winter'] == true) {
+                return -1;
+            } else {
+                return $a->getId() - $b->getId();
+            }
+        });
+
+        return $this->render('data/season/mercato.html.twig', [
+            'controller_name' => 'TeamController',
+            'arrivals' => $arrivals,
+            'departures' => $departures,
+            'team' => $team,
+            'season' => $season,
+            'previousSeason' => $previousSeason,
+            'nextSeason' => $nextSeason,
+            'teamSeasons' => $teamSeasons,
         ]);
     }
 }

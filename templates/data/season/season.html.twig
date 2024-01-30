@@ -4,7 +4,7 @@
 {% block h1 %}Saison {{ season.getName() }} de {{ season.getTeam().getName() }}{%endblock%}
 
 {% block body %}
-    <div class="mt-12 mb-6">
+    <div class="mt-6 mb-6">
         {% if previousSeason %}
             <a href="{{ path('team_season_home', {'teamId': season.getTeam().getId(), 'seasonId': previousSeason.getId()}) }}">
                 <i class="fa-solid fa-caret-left fa-xl"></i>
@@ -24,6 +24,79 @@
             {% else %}
                 <i class="fa-solid fa-caret-right fa-xl text-gray-500"></i>
         {% endif %}
+    </div>
+    <div class="my-6">
+        <a  onclick="showCompetitionForm()" class="btn btn-primary bg-pink-fm p-2 cursor-pointer rounded-md shadow-md font-bold transition-all transition-duration-500 hover:bg-pink-fm-light mx-2">
+            <i class="fas fa-plus"></i>
+            Ajouter une compétition
+        </a>
+        <a href="{{ path('new_season_player', {'teamId': season.getTeam().getId(), 'seasonId': season.id}) }}" class="btn btn-primary bg-pink-fm p-2 rounded-md shadow-md font-bold transition-all duration-500 hover:bg-pink-fm-light mx-2">
+            <i class="fas fa-plus"></i>
+            Ajouter un joueur
+        </a>
+        <a href="{{ path('season_mercato', {'teamId': season.getTeam().getId(), 'seasonId': season.id}) }}" class="btn btn-primary bg-pink-fm p-2 rounded-md shadow-md font-bold transition-all duration-500 hover:bg-pink-fm-light mx-2">
+            <i class="fas fa-repeat"></i>
+            Mercato
+        </a>
+    </div>
+    <div id="form-competition" class="{{ showCompetitionForm }} top-0 w-full h-full fixed flex justify-center items-center bg-black bg-opacity-80">
+        <div class="rounded-md shadow-lg bg-purple-fm pb-6 pt-4 pr-6">
+            {{ form_start(formCompetition) }}
+            <div class="text-2xl font-bold"><i onclick="showCompetitionForm()" class="fa-solid fa-circle-xmark cursor-pointer ml-4 mr-4 transition-all duration-500 hover:text-gray-400"></i> NOUVELLE COMPÉTITION</div>
+            {% for message in app.flashes('error') %}
+                <div class="text-red-600 text-sm font-bold mt-4">{{ message }}</div>
+            {% endfor %}
+            <div class="mx-4 mb-6 border-2 border-solid border-purple-fm shadow-xl grid grid-cols-6 text-center bg-purple-fm">
+                <div class="px-2 py-1 col-span-6">
+                    {{ form_label(formCompetition.name) }}<br>
+                    {{ form_widget(formCompetition.name, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                </div>
+                <div class="px-2 py-1 col-span-6">
+                    {{ form_label(formCompetition.ranking) }}<br>
+                    {{ form_widget(formCompetition.ranking, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                </div>
+                <div class="p-1 font-bold col-span-1">
+                    M
+                </div>
+                <div class="p-1 font-bold col-span-1">
+                    V
+                </div>
+                <div class="p-1 font-bold col-span-1">
+                    N
+                </div>
+                <div class="p-1 font-bold col-span-1">
+                    D
+                </div>
+                <div class="p-1 font-bold col-span-1">
+                    BP
+                </div>
+                <div class="p-1 font-bold col-span-1">
+                    BC
+                </div>
+                <div class="p-1 col-span-1 bg-purple-fm-light">
+                    {{ form_widget(formCompetition.matches, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                </div>
+                <div class="p-1 col-span-1 bg-purple-fm-light">
+                    {{ form_widget(formCompetition.victories, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                </div>
+                <div class="p-1 col-span-1 bg-purple-fm-light">
+                    {{ form_widget(formCompetition.draws, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                </div>
+                <div class="p-1 col-span-1 bg-purple-fm-light">
+                    {{ form_widget(formCompetition.defeats, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                </div>
+                <div class="p-1 col-span-1 bg-purple-fm-light">
+                    {{ form_widget(formCompetition.g, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                </div>
+                <div class="p-1 col-span-1 bg-purple-fm-light">
+                    {{ form_widget(formCompetition.ga, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
+                </div>
+            </div>
+            <div class="mt-6 m-auto">
+                {{ form_row(formCompetition.save, {'attr':{'class':'btn btn-primary bg-pink-fm p-2 rounded-md shadow-md font-bold transition-all duration-500 hover:bg-pink-fm-light'}}) }}
+            </div>
+            {{ form_end(formCompetition) }}
+        </div>
     </div>
     {% if season.getCompetitions() is not null %}
         <div class="flex justify-center my-2">
@@ -208,75 +281,6 @@
     {% else %}
         Aucun joueur enregistré pour cette saison<br>
     {% endif %}
-    <div class="my-6">
-        <a  onclick="showCompetitionForm()" class="btn btn-primary bg-pink-fm p-2 cursor-pointer rounded-md shadow-md font-bold transition-all transition-duration-500 hover:bg-pink-fm-light mx-2">
-            <i class="fas fa-plus"></i>
-            Ajouter une compétition
-        </a>
-        <a href="{{ path('new_season_player', {'teamId': season.getTeam().getId(), 'seasonId': season.id}) }}" class="btn btn-primary bg-pink-fm p-2 rounded-md shadow-md font-bold transition-all duration-500 hover:bg-pink-fm-light mx-2">
-            <i class="fas fa-plus"></i>
-            Ajouter un joueur
-        </a>
-    </div>
-    <div id="form-competition" class="{{ showCompetitionForm }} top-0 w-full h-full fixed flex justify-center items-center bg-black bg-opacity-80">
-        <div class="rounded-md shadow-lg bg-purple-fm pb-6 pt-4 pr-6">
-            {{ form_start(formCompetition) }}
-            <div class="text-2xl font-bold"><i onclick="showCompetitionForm()" class="fa-solid fa-circle-xmark cursor-pointer ml-4 mr-4 transition-all duration-500 hover:text-gray-400"></i> NOUVELLE COMPÉTITION</div>
-            {% for message in app.flashes('error') %}
-                <div class="text-red-600 text-sm font-bold mt-4">{{ message }}</div>
-            {% endfor %}
-            <div class="mx-4 mb-6 border-2 border-solid border-purple-fm shadow-xl grid grid-cols-6 text-center bg-purple-fm">
-                <div class="px-2 py-1 col-span-6">
-                    {{ form_label(formCompetition.name) }}<br>
-                    {{ form_widget(formCompetition.name, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
-                </div>
-                <div class="px-2 py-1 col-span-6">
-                    {{ form_label(formCompetition.ranking) }}<br>
-                    {{ form_widget(formCompetition.ranking, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
-                </div>
-                <div class="p-1 font-bold col-span-1">
-                    M
-                </div>
-                <div class="p-1 font-bold col-span-1">
-                    V
-                </div>
-                <div class="p-1 font-bold col-span-1">
-                    N
-                </div>
-                <div class="p-1 font-bold col-span-1">
-                    D
-                </div>
-                <div class="p-1 font-bold col-span-1">
-                    BP
-                </div>
-                <div class="p-1 font-bold col-span-1">
-                    BC
-                </div>
-                <div class="p-1 col-span-1 bg-purple-fm-light">
-                    {{ form_widget(formCompetition.matches, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
-                </div>
-                <div class="p-1 col-span-1 bg-purple-fm-light">
-                    {{ form_widget(formCompetition.victories, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
-                </div>
-                <div class="p-1 col-span-1 bg-purple-fm-light">
-                    {{ form_widget(formCompetition.draws, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
-                </div>
-                <div class="p-1 col-span-1 bg-purple-fm-light">
-                    {{ form_widget(formCompetition.defeats, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
-                </div>
-                <div class="p-1 col-span-1 bg-purple-fm-light">
-                    {{ form_widget(formCompetition.g, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
-                </div>
-                <div class="p-1 col-span-1 bg-purple-fm-light">
-                    {{ form_widget(formCompetition.ga, {'attr':{'class':'p-1 text-purple-fm rounded-sm'}}) }}
-                </div>
-            </div>
-            <div class="mt-6 m-auto">
-                {{ form_row(formCompetition.save, {'attr':{'class':'btn btn-primary bg-pink-fm p-2 rounded-md shadow-md font-bold transition-all duration-500 hover:bg-pink-fm-light'}}) }}
-            </div>
-            {{ form_end(formCompetition) }}
-        </div>
-    </div>
 {% endblock %}
 
 {% block scripts %}

@@ -1,0 +1,169 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ season.getTeam().getName() }} - Saison {{ season.getName() }}{% endblock %}
+{% block h1 %}Saison {{ season.getName() }} de {{ season.getTeam().getName() }} - Mercato{% endblock %}
+
+{% block body %}
+    <div class="mt-6 mb-6">
+        {% if previousSeason %}
+            <a href="{{ path('season_mercato', {'teamId': season.getTeam().getId(), 'seasonId': previousSeason.getId()}) }}">
+                <i class="fa-solid fa-caret-left fa-xl"></i>
+            </a>
+            {% else %}
+                <i class="fa-solid fa-caret-left fa-xl text-gray-500"></i>
+        {% endif %}
+        <select id="season-selector" onchange="goToSeason()" class="text-black">
+            {% for teamSeason in teamSeasons %}
+                <option class="py-1" {% if teamSeason.getId() == season.getId() %}selected{% endif %} value="{{ teamSeason.getId() }}">{{ teamSeason.getName() }}</option>
+            {% endfor %}
+        </select>
+        {% if nextSeason %}
+            <a href="{{ path('season_mercato', {'teamId': season.getTeam().getId(), 'seasonId': nextSeason.getId()}) }}">
+                <i class="fa-solid fa-caret-right fa-xl"></i>
+            </a>
+            {% else %}
+                <i class="fa-solid fa-caret-right fa-xl text-gray-500"></i>
+        {% endif %}
+    </div>
+    <div class="my-6">
+        <a href="{{ path('team_season_home', {'teamId': season.getTeam().getId(), 'seasonId': season.id}) }}" class="btn btn-primary bg-pink-fm p-2 rounded-md shadow-md font-bold transition-all duration-500 hover:bg-pink-fm-light mx-2">
+            <i class="fas fa-chart-simple"></i>
+            Résumé de la saison
+        </a>
+    </div>
+    {% if arrivals|length > 0 or departures|length > 0 %}
+        {% if arrivals|length > 0 %}
+        <h1 class="text-center text-2xl font-bold mb-6">Arrivées</h1>
+            <div class="border-2 border-solid border-purple-fm shadow-xl w-fit m-auto mb-20">
+                <div class="flex w-fit m-auto justify-center bg-purple-fm">
+                    <div class="p-2 w-48 font-bold col-span-3">
+                        Joueur<button class="sort pl-2" data-sort="list-name"><i class="fa-solid fa-sort fa-sm"></i></button>
+                    </div>
+                    <div class="p-2 w-24 font-bold col-span-2">
+                        Poste<button class="sort pl-2" data-sort="list-poste"><i class="fa-solid fa-sort fa-sm"></i></button>
+                    </div>
+                    <div class="p-2 w-44 font-bold col-span-3">
+                        Pays<button class="sort pl-2" data-sort="list-country"><i class="fa-solid fa-sort fa-sm"></i></button>
+                    </div>
+                    <div class="p-2 w-44 font-bold col-span-3">
+                        Arrivée
+                    </div>
+                </div>
+                <div class="list">
+                    {% for player in arrivals %}
+                        <div onclick="window.location = `{{ path('player_home', {'teamId':team.getId(), 'playerId':player.getId()}) }}`" class="{% if loop.index0 is even %}bg-purple-fm-light{% else %}bg-purple-fm{% endif %} flex w-fit m-auto justify-center cursor-pointer hover:bg-purple-fm-light-hover">
+                            <div class="p-2 w-48 m-w-fit flex justify-center items-center">
+                                <div class="text-center">
+                                    {{ player.firstname }}&nbsp;<span class="list-name">{{ player.lastname }}</span>
+                                </div>
+                            </div>
+                            <div class="p-2 w-24 flex justify-center items-center list-poste">
+                                {{ player.position }}
+                            </div>
+                            <div class="p-2 w-44 flex justify-center items-center">
+                                <div class="p-2"><span class="fi fi-{{player.countryFlag}}"></span>&nbsp;<span class="list-country h-max">{{ player.country }}</span></div>
+                            </div>
+                            <div class="p-2 w-44 flex justify-center items-center">
+                                <div class="text-center">
+                                    {% if player.arrival.type == 'origine' %}
+                                        Origine
+                                    {% elseif player.arrival.type == 'libre' %}
+                                        Libre
+                                    {% elseif player.arrival.type == 'forme' %}
+                                        Formé au club
+                                    {% else %}
+                                    {{ player.arrival.team }}
+                                    <br><div>
+                                        (D{{ player.arrival.division }} {{ player.arrival.country }},
+                                        {% if player.arrival.type == 'transfert' %}
+                                            {{ player.arrival.amount }})
+                                        {% elseif player.arrival.type == 'p.o.a.' %}
+                                            p. + {{ player.arrival.amount }})
+                                        {% else %}
+                                            {{ player.arrival.type }})
+                                        {% endif %}
+                                        {% if player.arrival.winter == true %}
+                                            <br><div class="text-xs">(arrivé en jan.)</div>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        {% if departures|length > 0 %}
+        <h1 class="text-center text-2xl font-bold mb-6">Départs</h1>
+            <div class="border-2 border-solid border-purple-fm shadow-xl w-fit m-auto mb-20">
+                <div class="flex w-fit m-auto justify-center bg-purple-fm">
+                    <div class="p-2 w-48 font-bold col-span-3">
+                        Joueur<button class="sort pl-2" data-sort="list-name"><i class="fa-solid fa-sort fa-sm"></i></button>
+                    </div>
+                    <div class="p-2 w-24 font-bold col-span-2">
+                        Poste<button class="sort pl-2" data-sort="list-poste"><i class="fa-solid fa-sort fa-sm"></i></button>
+                    </div>
+                    <div class="p-2 w-44 font-bold col-span-3">
+                        Pays<button class="sort pl-2" data-sort="list-country"><i class="fa-solid fa-sort fa-sm"></i></button>
+                    </div>
+                    <div class="p-2 w-44 font-bold col-span-3">
+                        Départ
+                    </div>
+                </div>
+                <div class="list">
+                    {% for player in departures %}
+                        <div onclick="window.location = `{{ path('player_home', {'teamId':team.getId(), 'playerId':player.getId()}) }}`" class="{% if loop.index0 is even %}bg-purple-fm-light{% else %}bg-purple-fm{% endif %} flex w-fit m-auto justify-center cursor-pointer hover:bg-purple-fm-light-hover">
+                            <div class="p-2 w-48 m-w-fit flex justify-center items-center">
+                                <div class="text-center">
+                                    {{ player.firstname }}&nbsp;<span class="list-name">{{ player.lastname }}</span>
+                                </div>
+                            </div>
+                            <div class="p-2 w-24 flex justify-center items-center list-poste">
+                                {{ player.position }}
+                            </div>
+                            <div class="p-2 w-44 flex justify-center items-center">
+                                <div class="p-2"><span class="fi fi-{{player.countryFlag}}"></span>&nbsp;<span class="list-country h-max">{{ player.country }}</span></div>
+                            </div>
+                            <div class="p-2 w-44 flex justify-center items-center">
+                                <div class="text-center">
+                                    {% if player.departure.type == 'retraite' %}
+                                        Retraite
+                                    {% elseif player.departure.type == 'libre' %}
+                                        Libre
+                                    {% else %}
+                                    {{ player.departure.team }}
+                                    <br><div>
+                                        (D{{ player.departure.division }} {{ player.departure.country }},
+                                        {% if player.departure.type == 'transfert' %}
+                                            {{ player.departure.amount }})
+                                        {% elseif player.departure.type == 'p.o.a.' %}
+                                            p. + {{ player.departure.amount }})
+                                        {% else %}
+                                            {{ player.departure.type }})
+                                        {% endif %}
+                                        {% if player.departure.winter == true %}
+                                            <br><div class="text-xs">(parti en jan.)</div>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% else %}
+        Aucun mouvement cette saison<br>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function goToSeason() {
+            let seasonId = document.getElementById('season-selector').value;
+            window.location = `{{ path('season_mercato', {'teamId': team.getId(), 'seasonId': 'seasonId'}) }}`.replace('seasonId', seasonId);
+        }
+    </script>
+{% endblock %}
