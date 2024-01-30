@@ -91,7 +91,7 @@
         {% set rank = 0 %}
         {% for season in player.getPlayerSeasons() | sort((a, b) => a.getTeamSeason().getName() <=> b.getTeamSeason().getName()) %}
             {% set rank = rank + 1 %}
-        <div class="p-2 col-span-2 flex justify-center items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
+        <div onclick="window.location = `{{ path('team_season_home', {'teamId': player.getTeam().getId(), 'seasonId': season.getTeamSeason().getId()}) }}`" class="p-2 col-span-2 flex justify-center cursor-pointer items-center {% if rank is odd %}bg-purple-fm-light{% endif %}">
             <div>
             {{ season.getTeamSeason().getName() }} 
             {% if player.arrival.winter == true and (season.getTeamSeason().getName()|slice(0,4) + 1) == player.arrival.date %}
